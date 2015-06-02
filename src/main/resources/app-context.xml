@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+          "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="mainFrame" class="currency.ui.MainFrame" init-method="init">
+		<property name="contentPane">
+			<ref bean="mainPanel"/>
+		</property>
+		<property name="title">
+			<value>Currency Exchanger</value>
+		</property>
+	</bean>
+	<bean id="mainPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
+		<property name="axis">
+      		<value>1</value>
+    	</property>
+    	<property name="panelComponents">
+      		<list>
+        		<ref bean="itemScrollPane"/>
+        		<ref bean="buttonPanel"/>
+      		</list>
+    	</property>
+  	</bean>
+	<bean id="itemScrollPane" class="javax.swing.JScrollPane">
+		<constructor-arg>
+			<ref bean="itemTable"/>
+	    </constructor-arg>
+	</bean>
+	<bean id="itemTable" class="javax.swing.JTable">
+		<property name="model">
+			<ref bean="itemTableModel"/>
+		</property>
+	</bean>
+	<bean id="itemTableModel" class="currency.ui.model.TableModel">
+		<property name="itemList">
+			<ref bean="itemList"/>
+		</property>
+		<property name="columnNameList">
+			<ref bean="columnNameList"/>
+		</property>
+	</bean>
+	<bean id="itemList" class="java.util.ArrayList">
+    	<constructor-arg>
+			<list>
+				<value>USD</value>
+        		<value>PLN</value>
+      		</list>
+    	</constructor-arg>
+	</bean>
+	<bean id="columnNameList" class="java.util.ArrayList">
+    	<constructor-arg>
+			<list>
+				<value>First</value>
+        		<value>Second</value>
+        		<value>Third</value>
+      		</list>
+    	</constructor-arg>
+	</bean>
+	<bean id="buttonPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
+		<property name="axis">
+			<value>0</value>
+		</property>
+		<property name="panelComponents">
+			<list>
+				<ref bean="deleteButton"/>
+				<ref bean="addNewButton"/>
+				<ref bean="refreshButton"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="deleteButton" class="currency.ui.button.ActionListenerButton" init-method="init">
+		<property name="actionListener">
+			<ref bean="deleteButtonActionListener"/>
+		</property>
+		<property name="text">
+			<value>Delete</value>
+		</property>
+	</bean>
+	<bean id="deleteButtonActionListener" class="currency.ui.button.DeleteButtonActionListener">
+		<property name="list">
+			<ref bean="itemList"/>
+		</property>
+		<property name="table">
+			<ref bean="itemTable"/>
+		</property>
+	</bean>
+	<bean id="refreshButton" class="currency.ui.button.ActionListenerButton" init-method="init">
+		<property name="actionListener">
+			<ref bean="refreshButtonActionListener"/>
+		</property>
+		<property name="text">
+			<value>Refresh</value>
+		</property>
+	</bean>
+	<bean id="refreshButtonActionListener" class="currency.ui.button.RefreshButtonActionListener">
+		<property name="list">
+			<ref bean="itemList"/>
+		</property>
+		<property name="table">
+			<ref bean="itemTable"/>
+		</property>
+		<property name="taskExecutor">
+	        <ref bean="mainTaskExecutor" />
+	    </property>
+	    <property name="userDao">
+	        <ref bean="userDao" />
+	    </property>
+	</bean>
+	<bean id="addNewButton" class="currency.ui.button.ActionListenerButton" init-method="init">
+		<property name="actionListener">
+			<ref bean="addNewButtonActionListener"/>
+		</property>
+		<property name="text">
+			<value>Add New</value>
+		</property>
+	</bean>
+	<bean id="addNewButtonActionListener" class="currency.ui.button.AddNewButtonActionListener">
+		<property name="list">
+			<ref bean="itemList"/>
+		</property>
+		<property name="table">
+			<ref bean="itemTable"/>
+		</property>
+	</bean>
+	
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+	    <property name="corePoolSize" value="5" />
+	    <property name="maxPoolSize" value="10" />
+	    <property name="queueCapacity" value="25" />
+	</bean>
+	<bean id="mainTaskExecutor" class="currency.task.MainTaskExecutor">
+		<constructor-arg ref="taskExecutor" />
+	</bean>
+	
+   	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	    <property name="location">
+	        <value>database.properties</value>
+	    </property>
+	</bean>
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+   	</bean>
+   	
+   	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+   	    <property name="dataSource" ref="dataSource"/>
+   	</bean>
+   	<bean id="userDao" class="currency.database.user.dao.impl.UserDaoImpl">
+   	    <constructor-arg ref="transactionManager" />
+   	</bean>
+</beans>
