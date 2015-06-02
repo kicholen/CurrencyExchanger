@@ -190,7 +190,7 @@
 	    <property name="maxPoolSize" value="10" />
 	    <property name="queueCapacity" value="25" />
 	</bean>
-	<bean id="mainTaskExecutor" class="currency.task.MainTaskExecutor">
+	<bean id="mainTaskExecutor" class="currency.task.MainTaskExecutor" init-method="init">
 		<constructor-arg ref="taskExecutor" />
 	    <property name="eventPublisher">
 			<ref bean="currencyEventPublisher"/>

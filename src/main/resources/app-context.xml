@@ -32,11 +32,11 @@
 		</property>
 	</bean>
 	<bean id="itemTableModel" class="currency.ui.model.TableModel">
-		<property name="itemList">
-			<ref bean="itemList"/>
-		</property>
 		<property name="columnNameList">
 			<ref bean="columnNameList"/>
+		</property>
+		<property name="currencyModelList">
+			<ref bean="currencyModelList"/>
 		</property>
 	</bean>
 	<bean id="itemList" class="java.util.ArrayList">
@@ -50,11 +50,26 @@
 	<bean id="columnNameList" class="java.util.ArrayList">
     	<constructor-arg>
 			<list>
-				<value>First</value>
-        		<value>Second</value>
-        		<value>Third</value>
+			    <value>From</value>
+        		<value>To</value>
+        		<value>Value</value>
       		</list>
     	</constructor-arg>
+	</bean>
+	<bean id="currencyModelList" class="java.util.ArrayList">
+	    <constructor-arg>
+	        <list>
+	            <ref bean="currencyItem"/>
+	        </list>
+	    </constructor-arg>
+	</bean>
+	<bean id="currencyItem" class="currency.model.CurrencyModel">
+		<property name="from">
+		    <value>PLN</value>
+		</property>
+		<property name="to">
+		    <value>USD</value>
+		</property>
 	</bean>
 	<bean id="buttonPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
 		<property name="axis">
@@ -65,9 +80,46 @@
 				<ref bean="deleteButton"/>
 				<ref bean="addNewButton"/>
 				<ref bean="refreshButton"/>
+				<ref bean="openCalculatorButton"/>
+				<ref bean="openGraphButton"/>
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="openGraphButton" class="currency.ui.button.ActionListenerButton" init-method="init">
+		<property name="actionListener">
+			<ref bean="openGraphButtonActionListener"/>
+		</property>
+		<property name="text">
+			<value>Draw Graph</value>
+		</property>
+	</bean>
+	<bean id="openGraphButtonActionListener" class="currency.ui.button.OpenGraphButtonActionListener">
+		<property name="list">
+			<ref bean="currencyModelList"/>
+		</property>
+		<property name="table">
+			<ref bean="itemTable"/>
+		</property>
+	</bean>
+	
+	<bean id="openCalculatorButton" class="currency.ui.button.ActionListenerButton" init-method="init">
+		<property name="actionListener">
+			<ref bean="openCalculatorButtonActionListener"/>
+		</property>
+		<property name="text">
+			<value>Calculator</value>
+		</property>
+	</bean>
+	<bean id="openCalculatorButtonActionListener" class="currency.ui.button.OpenCalculatorButtonActionListener">
+		<property name="list">
+			<ref bean="currencyModelList"/>
+		</property>
+		<property name="table">
+			<ref bean="itemTable"/>
+		</property>
+	</bean>
+	
 	<bean id="deleteButton" class="currency.ui.button.ActionListenerButton" init-method="init">
 		<property name="actionListener">
 			<ref bean="deleteButtonActionListener"/>
@@ -78,7 +130,7 @@
 	</bean>
 	<bean id="deleteButtonActionListener" class="currency.ui.button.DeleteButtonActionListener">
 		<property name="list">
-			<ref bean="itemList"/>
+			<ref bean="currencyModelList"/>
 		</property>
 		<property name="table">
 			<ref bean="itemTable"/>
@@ -94,16 +146,13 @@
 	</bean>
 	<bean id="refreshButtonActionListener" class="currency.ui.button.RefreshButtonActionListener">
 		<property name="list">
-			<ref bean="itemList"/>
+			<ref bean="currencyModelList"/>
 		</property>
 		<property name="table">
 			<ref bean="itemTable"/>
 		</property>
 		<property name="taskExecutor">
 	        <ref bean="mainTaskExecutor" />
-	    </property>
-	    <property name="userDao">
-	        <ref bean="userDao" />
 	    </property>
 	</bean>
 	<bean id="addNewButton" class="currency.ui.button.ActionListenerButton" init-method="init">
@@ -116,20 +165,39 @@
 	</bean>
 	<bean id="addNewButtonActionListener" class="currency.ui.button.AddNewButtonActionListener">
 		<property name="list">
-			<ref bean="itemList"/>
+			<ref bean="currencyModelList"/>
 		</property>
 		<property name="table">
 			<ref bean="itemTable"/>
 		</property>
 	</bean>
 	
+	<bean id="currencyEventHandler" class="currency.event.CurrencyEventHandler">
+		<property name="list">
+			<ref bean="currencyModelList"/>
+		</property>
+		<property name="table">
+			<ref bean="itemTable"/>
+		</property>
+		<property name="recordDao">
+			<ref bean="recordDao"/>
+		</property>
+	</bean>
+	<bean id="currencyEventPublisher" class="currency.event.CurrencyEventPublisher"/>
+	
 	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
 	    <property name="corePoolSize" value="5" />
 	    <property name="maxPoolSize" value="10" />
 	    <property name="queueCapacity" value="25" />
 	</bean>
-	<bean id="mainTaskExecutor" class="currency.task.MainTaskExecutor">
+	<bean id="mainTaskExecutor" class="currency.task.MainTaskExecutor" init-method="init">
 		<constructor-arg ref="taskExecutor" />
+	    <property name="eventPublisher">
+			<ref bean="currencyEventPublisher"/>
+	    </property>
+	    <property name="currencyModelList">
+			<ref bean="currencyModelList"/>
+	    </property>
 	</bean>
 	
    	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
@@ -148,6 +216,9 @@
    	    <property name="dataSource" ref="dataSource"/>
    	</bean>
    	<bean id="userDao" class="currency.database.user.dao.impl.UserDaoImpl">
+   	    <constructor-arg ref="transactionManager" />
+   	</bean>
+   	<bean id="recordDao" class="currency.database.record.dao.impl.RecordDaoImpl">
    	    <constructor-arg ref="transactionManager" />
    	</bean>
 </beans>

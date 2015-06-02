@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+          "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+	<bean id="mainFrame" class="currency.ui.MainFrame" init-method="init">
+	    <property name="contentPane">
+			<ref bean="mainPanel"/>
+		</property>
+		<property name="size">
+			<ref bean="mainFrameSize"/>
+		</property>
+		<property name="title">
+			<value>Calculator</value>
+		</property>
+	</bean>
+	<bean id="mainFrameSize" class="java.awt.Dimension">
+		<constructor-arg>
+			<value>350</value>
+    	</constructor-arg>
+    	<constructor-arg>
+			<value>100</value>
+    	</constructor-arg>
+	</bean>
+	<bean id="mainPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
+		<property name="axis">
+      		<value>1</value>
+    	</property>
+    	<property name="panelComponents">
+      		<list>
+      		    <ref bean="inputPanel"/>
+        		<ref bean="buttonPanel"/>
+      		</list>
+    	</property>
+  	</bean>
+  	<bean id="inputPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
+		<property name="axis">
+			<value>0</value>
+		</property>
+		<property name="panelComponents">
+			<list>
+			    <ref bean="infoTextfield"/>
+				<ref bean="valueTextfield"/>
+				<ref bean="resultTextfield"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="valueTextfield" class="javax.swing.JTextField">
+		<property name="text">
+			<value>1000</value>
+		</property>
+	</bean>
+	<bean id="infoTextfield" class="javax.swing.JTextField">
+		<property name="editable">
+			<value>false</value>
+		</property>
+	</bean>
+	<bean id="resultTextfield" class="javax.swing.JTextField">
+		<property name="text">
+			<value>0</value>
+		</property>
+		<property name="editable">
+			<value>false</value>
+		</property>
+	</bean>
+	<bean id="buttonPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
+		<property name="axis">
+			<value>0</value>
+		</property>
+		<property name="panelComponents">
+			<list>
+				<ref bean="calculateButton"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="calculateButton" class="currency.ui.button.ActionListenerButton" init-method="init">
+		<property name="actionListener">
+			<ref bean="calculateButtonActionListener"/>
+		</property>
+		<property name="text">
+			<value>Calculate</value>
+		</property>
+	</bean>
+	<bean id="calculateButtonActionListener" class="currency.ui.button.CalculateButtonActionListener">
+		<property name="valueTextfield">
+		    <ref bean="valueTextfield"/>
+		</property>
+		<property name="resultTextfield">
+		    <ref bean="resultTextfield"/>
+		</property>
+		<property name="conversionRate">
+		    <value>0.0</value>
+		</property>
+	</bean>
+</beans>
