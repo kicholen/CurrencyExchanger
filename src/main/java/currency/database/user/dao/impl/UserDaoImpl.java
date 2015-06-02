@@ -1,5 +1,7 @@
 package currency.database.user.dao.impl;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -65,6 +67,27 @@ public class UserDaoImpl implements UserDao {
 		});
 		
 		return user;
+	}
+	
+	@Override
+	public void authenticate(String login, String password, ActionListener listener) {
+		String sql = "select LOGIN, PASSWORD from USER where LOGIN = ?";
+		Object[] params = new Object[]{ login };
+		User user = new User();
+		
+		jdbcTemplate.query(sql, params, new RowCallbackHandler() {
+
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				user.setLogin(rs.getString("LOGIN"));
+				user.setPassword(rs.getString("PASSWORD"));
+				
+				if (user.getLogin().equals(login) && user.getPassword().equals(password)) {
+					listener.actionPerformed(new ActionEvent("", 1, ""));
+				}
+			}
+			
+		});
 	}
 	
 	private void createTableIfNeeded() {

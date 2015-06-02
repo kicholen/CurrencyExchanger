@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" 
+          "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+    <bean id="applicationContextProvder" class="currency.ApplicationContextProvider"/>
+    
+	<bean id="mainFrame" class="currency.ui.MainFrame" init-method="init">
+	    <property name="contentPane">
+			<ref bean="mainPanel"/>
+		</property>
+		<property name="size">
+			<ref bean="mainFrameSize"/>
+		</property>
+		<property name="title">
+			<value>Login</value>
+		</property>
+	</bean>
+	<bean id="mainFrameSize" class="java.awt.Dimension">
+		<constructor-arg>
+			<value>250</value>
+    	</constructor-arg>
+    	<constructor-arg>
+			<value>100</value>
+    	</constructor-arg>
+	</bean>
+	<bean id="mainPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
+		<property name="axis">
+      		<value>1</value>
+    	</property>
+    	<property name="panelComponents">
+      		<list>
+      		    <ref bean="inputPanel"/>
+        		<ref bean="buttonPanel"/>
+      		</list>
+    	</property>
+  	</bean>
+  	<bean id="inputPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
+		<property name="axis">
+			<value>0</value>
+		</property>
+		<property name="panelComponents">
+			<list>
+				<ref bean="loginTextfield"/>
+				<ref bean="passwordTextfield"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="loginTextfield" class="javax.swing.JTextField">
+		<property name="text">
+			<value>login</value>
+		</property>
+	</bean>
+	<bean id="passwordTextfield" class="javax.swing.JTextField">
+		<property name="text">
+			<value>password</value>
+		</property>
+	</bean>
+	<bean id="buttonPanel" class="currency.ui.BoxLayoutPanel" init-method="init">
+		<property name="axis">
+			<value>0</value>
+		</property>
+		<property name="panelComponents">
+			<list>
+				<ref bean="loginButton"/>
+			</list>
+		</property>
+	</bean>
+	<bean id="loginButton" class="currency.ui.button.ActionListenerButton" init-method="init">
+		<property name="actionListener">
+			<ref bean="loginButtonActionListener"/>
+		</property>
+		<property name="text">
+			<value>Login</value>
+		</property>
+	</bean>
+	<bean id="loginButtonActionListener" class="currency.ui.button.LoginButtonActionListener">
+		<property name="loginTextfield">
+		    <ref bean="loginTextfield"/>
+		</property>
+		<property name="passwordTextfield">
+		    <ref bean="passwordTextfield"/>
+		</property>
+		<property name="userDao">
+		    <ref bean="userDao"/>
+		</property>
+	</bean>
+	
+   	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+	    <property name="location">
+	        <value>database.properties</value>
+	    </property>
+	</bean>
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+   	</bean>
+   	
+   	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+   	    <property name="dataSource" ref="dataSource"/>
+   	</bean>
+   	<bean id="userDao" class="currency.database.user.dao.impl.UserDaoImpl">
+   	    <constructor-arg ref="transactionManager" />
+   	</bean>
+</beans>

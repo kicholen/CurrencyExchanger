@@ -1,5 +1,7 @@
 package currency.database.record.dao;
 
+import java.util.List;
+
 import currency.database.record.model.Record;
 
 public interface RecordDao {
@@ -11,4 +13,8 @@ public interface RecordDao {
 	void deleteRecord(int key);
 	
 	Record selectRecord(int key);
+
+	List<Record> findAll();
+
+	List<Record> findRecords(String from, String to);
 }

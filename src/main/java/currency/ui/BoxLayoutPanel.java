@@ -22,8 +22,7 @@ public class BoxLayoutPanel extends JPanel {
     public void init() {
         setLayout(new BoxLayout(this, axis));
 
-        for (Iterator<Component> iter = panelComponents.iterator();
-             iter.hasNext();) {
+        for (Iterator<Component> iter = panelComponents.iterator(); iter.hasNext();) {
             Component component = (Component) iter.next();
             add(component);
         }

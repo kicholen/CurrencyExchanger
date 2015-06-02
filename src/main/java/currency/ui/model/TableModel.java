@@ -4,28 +4,44 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import currency.model.CurrencyModel;
+
 public class TableModel extends AbstractTableModel {
-	List<String> itemList;
 	List<String> columnNameList;
+	List<CurrencyModel> currencyModelList;
 	
 	public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return false;
+		if (columnIndex == 2) {
+			return false;
+		}
+		else {
+			return true;
+		}
     }
 	
 	public String getColumnName(int column) {
         return columnNameList.get(column);
     }
 	
-	public void setItemList(List<String> itemList) {
-        this.itemList = itemList;
-    }
-	
 	public void setColumnNameList(List<String> columnNameList) {
         this.columnNameList = columnNameList;
     }
 	
-	public void setValueAt(String value, int rowIndex, int columnIndex) {
-		itemList.set(rowIndex, value);
+	public void setCurrencyModelList(List<CurrencyModel> currencyModelList) {
+		this.currencyModelList = currencyModelList;
+	}
+	
+	public void setValueAt(Object value, int rowIndex, int columnIndex) {
+		if (columnIndex == 0) {
+			currencyModelList.get(rowIndex).setFrom((String)value);
+		}
+		else if (columnIndex == 1) {
+			currencyModelList.get(rowIndex).setTo((String)value);
+		}
+		else {
+			System.out.println(columnIndex);
+			currencyModelList.get(rowIndex).setValue((float)value);
+		}
 	}
 	
 	@Override
@@ -35,12 +51,20 @@ public class TableModel extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return itemList.size();
+		return currencyModelList.size();
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return itemList.get(rowIndex);
+		if (columnIndex == 0) {
+			return currencyModelList.get(rowIndex).getFrom();
+		}
+		else if (columnIndex == 1) {
+			return currencyModelList.get(rowIndex).getTo();
+		}
+		else {
+			return currencyModelList.get(rowIndex).getValue();
+		}
 	}
 
 }

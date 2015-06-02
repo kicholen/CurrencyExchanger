@@ -5,14 +5,17 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-public class UpdateCurrencyTask implements Runnable {
-    private String from;
-	private String to;
-	private double result;
+import currency.event.CurrencyEventPublisher;
 
-    public UpdateCurrencyTask(String from, String to) {
+public class UpdateCurrencyTask implements Runnable {
+	private CurrencyEventPublisher currencyPublisher;
+	private String from;
+	private String to;
+	
+    public UpdateCurrencyTask(String from, String to, CurrencyEventPublisher currencyPublisher) {
         this.from = from;
         this.to = to;
+        this.currencyPublisher = currencyPublisher;
     }
 
     public void run() {
@@ -21,7 +24,7 @@ public class UpdateCurrencyTask implements Runnable {
             BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
             String line = reader.readLine();
             if (line.length() > 0) {
-                System.out.println(Double.parseDouble(line));
+                currencyPublisher.publish(from, to, Float.parseFloat(line));
             }
             reader.close();
         } 
@@ -29,4 +32,5 @@ public class UpdateCurrencyTask implements Runnable {
             System.out.println(e.getMessage());
         }
     }
+
 }

@@ -6,12 +6,14 @@ public class Record implements Serializable {
 	private int id;
 	private float value;
 	private long timestamp;
+	private String from;
+	private String to;
 	
 	public Record() {
 		
 	}
 	
-	public Record(int id, float value, long timestamp) {
+	public Record(int id, float value, long timestamp, String from, String to) {
 		this.id = id;
 		this.value = value;
 		this.timestamp = timestamp;
@@ -44,5 +46,21 @@ public class Record implements Serializable {
 	@Override
 	public String toString() {
 		return "Record [value=" + value + ", timestamp=" + timestamp + "]";
+	}
+
+	public String getFrom() {
+		return from;
+	}
+	
+	public void setFrom(String from) {
+		this.from = from;
+	}
+	
+	public String getTo() {
+		return to;
+	}
+	
+	public void setTo(String to) {
+		this.to = to;
 	}
 }

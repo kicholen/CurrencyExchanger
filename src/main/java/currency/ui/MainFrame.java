@@ -8,12 +8,19 @@ import javax.swing.WindowConstants;
 
 public class MainFrame extends JFrame {
 	
-    public void init() {
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        setSize(new Dimension(600, 400));
+    private Dimension _dim;
 
+	public void init() {
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        _dim = _dim == null ? new Dimension(600, 400) : _dim;
+        setSize(_dim);
         setVisible(true);
         setState(Frame.NORMAL);
     }
     
+    @Override
+    public void setSize(Dimension dim) {
+    	_dim = dim;
+    	super.setSize(dim);
+    }
 }
